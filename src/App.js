@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  from,
+} from "@apollo/client";
+
+import { onError } from "@apollo/client/link/error";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import GetUsers from "./components/GetUsers";
+import Login from "./pages/Auth/Login";
+import Registration from './pages/Auth/Registration'
+const errorLink = onError(({ graphqlErrors, networkError }) => {
+  if (graphqlErrors) {
+    graphqlErrors.map(({ message, location, path }) => {
+      alert(`GQL error`, message);
+    });
+  }
+});
+
+const BASE_URL = "http://localhost:5000/graphql"; //import.meta.env.BASE_URL
+const link = from([errorLink, new HttpLink({ uri: BASE_URL })]);
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: link,
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <Registration />
+    </ApolloProvider>
   );
 }
 
