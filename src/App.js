@@ -13,6 +13,10 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import GetUsers from "./components/GetUsers";
 import Login from "./pages/Auth/Login";
 import Registration from './pages/Auth/Registration'
+import CreateProduct from './pages/Product/CreateProduct'
+import EditProduct from './pages/Product/EditProduct'
+import AllProductList from './pages/Product/AllProductList'
+import PurchaseOrRent from './pages/Product/PurchaseOrRentProduct'
 const errorLink = onError(({ graphqlErrors, networkError }) => {
   if (graphqlErrors) {
     graphqlErrors.map(({ message, location, path }) => {
@@ -32,7 +36,7 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Registration />
+      <PurchaseOrRent />
     </ApolloProvider>
   );
 }
