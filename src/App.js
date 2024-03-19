@@ -17,6 +17,14 @@ import CreateProduct from './pages/Product/CreateProduct'
 import EditProduct from './pages/Product/EditProduct'
 import AllProductList from './pages/Product/AllProductList'
 import PurchaseOrRent from './pages/Product/PurchaseOrRentProduct'
+import ProductsByUser from './pages/Product/ProductsByUser'
+import ProductsReport from './pages/Product/ProductsReport'
+
+
+
+
+
+
 const errorLink = onError(({ graphqlErrors, networkError }) => {
   if (graphqlErrors) {
     graphqlErrors.map(({ message, location, path }) => {
@@ -35,9 +43,22 @@ const client = new ApolloClient({
 
 function App() {
   return (
+    <div className="App">
     <ApolloProvider client={client}>
-      <Registration />
+    <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="signUp" element={<Registration />} />
+        <Route path="home" element={<AllProductList />} />
+        <Route path="createProduct" element={<CreateProduct />} />
+        <Route path="editProduct" element={<EditProduct />} />
+        <Route path="purchaseOrRent" element={<PurchaseOrRent />} />
+        <Route path="products" element={<ProductsByUser />} />
+        <Route path="report" element={<ProductsReport />} />
+        
+        
+      </Routes>
     </ApolloProvider>
+   </div>
   );
 }
 

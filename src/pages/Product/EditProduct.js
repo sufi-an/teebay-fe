@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Select from '@mui/material/Select';
@@ -6,22 +6,80 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+import Button from "@mui/material/Button";
+import { useQuery, gql } from "@apollo/client";
+import { useSearchParams } from "react-router-dom";
+import { GetProductById } from "../../graphql/Product/Queries";
+import { getCategoryString } from "../../utils/productUtils";
+import { getAllCategories } from "../../graphql/category/Queries";
+import { useMutation } from "@apollo/client";
+import { updateProductMutation } from "../../graphql/Product/Mutations";
+
 const RentalForm = () => {
   // State for form fields
   const [title, setTitle] = React.useState('');
   const [category, setCategory] = React.useState([]);
+  const [allCategory, setAllCategory] = React.useState([]);
   const [description, setDescription] = React.useState('');
   const [price, setPrice] = React.useState('');
-  const [rentRate, setRentRate] = React.useState('');
+  const [rentPrice, setRentPrice] = React.useState('');
   const [rentType, setRentType] = React.useState('');
 
+  // params
+  const [searchParams, setSearchParams] = useSearchParams();
+  const productId = searchParams.get("product");
+
+  // queries
+  const productData = useQuery(GetProductById, {
+    variables: { id: productId },
+  });
+  const categoryData = useQuery(getAllCategories);
+
+  // mutations
+  const [updateProduct, { error }] = useMutation(updateProductMutation);
+ 
+  useEffect(() => {
+    if (productData.data) {
+      setTitle(productData.data.getProductById.title);
+      setCategory(productData.data.getProductById.category)
+      setDescription(productData.data.getProductById.description)
+      setPrice(productData.data.getProductById.price)
+      setRentPrice(productData.data.getProductById.rentPrice)
+      setRentType(productData.data.getProductById.rentType)
+      
+      console.log(productData.data)
+    }
+    if(categoryData.data){
+      setAllCategory(categoryData.data.getAllCategories)
+     
+    }
+  }, [productData.data,categoryData.data]);
+
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    updateProduct({
+      variables: {
+        updateProductId: productId,
+        title:title,
+        // category: formData.address,
+        description: description,
+        price: parseFloat(price),
+        rentPrice:parseFloat(rentPrice),
+        rentType: rentType,
+      },
+    });
+
+    if (error) {
+      console.log(error);
+    }
+  }
   // Handle category selection
   const handleCategoryChange = (event, newValue) => {
     setCategory(newValue);
   };
 
   return (
-    <div>
+    <div >
       <TextField
         label="Title"
         variant="outlined"
@@ -29,11 +87,11 @@ const RentalForm = () => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      <Autocomplete
+      {/* <Autocomplete
         multiple
         id="category"
-        options={['Electronics', 'Furniture', 'Clothing', 'Books', 'Other']}
-        value={category}
+        options={allCategory}
+        value={category.id}
         onChange={handleCategoryChange}
         renderInput={(params) => (
           <TextField
@@ -43,7 +101,7 @@ const RentalForm = () => {
             fullWidth
           />
         )}
-      />
+      /> */}
       <TextField
         label="Description"
         variant="outlined"
@@ -64,8 +122,8 @@ const RentalForm = () => {
         label="Rent Rate"
         variant="outlined"
         fullWidth
-        value={rentRate}
-        onChange={(e) => setRentRate(e.target.value)}
+        value={rentPrice}
+        onChange={(e) => setRentPrice(e.target.value)}
       />
       <FormControl fullWidth variant="outlined">
         <InputLabel>Rent Type</InputLabel>
@@ -74,11 +132,17 @@ const RentalForm = () => {
           onChange={(e) => setRentType(e.target.value)}
           label="Rent Type"
         >
-          <MenuItem value="daily">Daily</MenuItem>
+          <MenuItem value="hour">Hourly</MenuItem>
           <MenuItem value="weekly">Weekly</MenuItem>
           <MenuItem value="monthly">Monthly</MenuItem>
         </Select>
       </FormControl>
+      <Button type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={handleSubmit}
+            >Update</Button>
     </div>
   );
 };

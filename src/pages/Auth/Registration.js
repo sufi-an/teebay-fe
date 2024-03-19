@@ -7,7 +7,7 @@ import { CreateUserMutation } from '../../graphql/Auth/Mutations';
 
 const Registration = () => {
 
-    const [createUser, { error }] = useMutation(CreateUserMutation);
+  const [createUser, { error }] = useMutation(CreateUserMutation);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
