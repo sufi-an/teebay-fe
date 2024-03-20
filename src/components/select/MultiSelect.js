@@ -32,7 +32,7 @@ const names = [
 ];
 
 export default function MultipleSelectCheckmarks() {
-  const [personName, setPersonName] = React.useState([]);
+  const [personName, setPersonName] = useState([]);
 
   const handleChange = (event) => {
     const {

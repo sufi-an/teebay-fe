@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react"; 
 import ProductCard from '../../components/Card/ProductCard'; 
 import {useQuery, gql} from '@apollo/client'
-
+import Button from '@mui/material/Button';
 import {getAllProducts} from '../../graphql/Product/Queries'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const ProductList = () => {
 
         if(data){ 
           setProducts(data.getProductByUser)
-          console.log(data)
+       
         }
     },[data])
 
@@ -22,7 +22,17 @@ const ProductList = () => {
       navigate(path);
     }
   return (
-    <div>
+    <div >
+      <Link
+           to={'/products'}
+          >
+            My Products
+          </Link>
+      <Link
+           to={'/report'}
+          >
+            Report
+      </Link>
       {products.map((product, index) => (
         <ProductCard onClickHandler={onProductClick} key={index} product={product} />
       ))}

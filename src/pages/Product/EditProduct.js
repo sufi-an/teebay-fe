@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 
 import Button from "@mui/material/Button";
 import { useQuery, gql } from "@apollo/client";
@@ -17,13 +17,13 @@ import { updateProductMutation } from "../../graphql/Product/Mutations";
 
 const RentalForm = () => {
   // State for form fields
-  const [title, setTitle] = React.useState('');
-  const [category, setCategory] = React.useState([]);
-  const [allCategory, setAllCategory] = React.useState([]);
-  const [description, setDescription] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [rentPrice, setRentPrice] = React.useState('');
-  const [rentType, setRentType] = React.useState('');
+  const [category, setCategory] = useState([]);
+  const [allCategory, setAllCategory] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [rentPrice, setRentPrice] = useState("");
+  const [rentType, setRentType] = useState("");
 
   // params
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,34 +37,30 @@ const RentalForm = () => {
 
   // mutations
   const [updateProduct, { error }] = useMutation(updateProductMutation);
- 
+
   useEffect(() => {
     if (productData.data) {
       setTitle(productData.data.getProductById.title);
-      setCategory(productData.data.getProductById.category)
-      setDescription(productData.data.getProductById.description)
-      setPrice(productData.data.getProductById.price)
-      setRentPrice(productData.data.getProductById.rentPrice)
-      setRentType(productData.data.getProductById.rentType)
-      
-      console.log(productData.data)
+      setCategory(productData.data.getProductById.category);
+      setDescription(productData.data.getProductById.description);
+      setPrice(productData.data.getProductById.price);
+      setRentPrice(productData.data.getProductById.rentPrice);
+      setRentType(productData.data.getProductById.rentType);
     }
-    if(categoryData.data){
-      setAllCategory(categoryData.data.getAllCategories)
-     
+    if (categoryData.data) {
+      setAllCategory(categoryData.data.getAllCategories);
     }
-  }, [productData.data,categoryData.data]);
+  }, [productData.data, categoryData.data]);
 
-  const handleSubmit=(e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
     updateProduct({
       variables: {
         updateProductId: productId,
-        title:title,
-        // category: formData.address,
+        title: title,
         description: description,
         price: parseFloat(price),
-        rentPrice:parseFloat(rentPrice),
+        rentPrice: parseFloat(rentPrice),
         rentType: rentType,
       },
     });
@@ -72,14 +68,14 @@ const RentalForm = () => {
     if (error) {
       console.log(error);
     }
-  }
+  };
   // Handle category selection
   const handleCategoryChange = (event, newValue) => {
     setCategory(newValue);
   };
 
   return (
-    <div >
+    <div>
       <TextField
         label="Title"
         variant="outlined"
@@ -137,12 +133,15 @@ const RentalForm = () => {
           <MenuItem value="monthly">Monthly</MenuItem>
         </Select>
       </FormControl>
-      <Button type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit}
-            >Update</Button>
+      <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        sx={{ mt: 3, mb: 2 }}
+        onClick={handleSubmit}
+      >
+        Update
+      </Button>
     </div>
   );
 };

@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { TextField, Button, Grid, Container } from '@mui/material';
+import React, { useState } from "react";
+import { TextField, Button, Grid, Container } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 import { useMutation } from "@apollo/client";
-import { CreateUserMutation } from '../../graphql/Auth/Mutations';
+import { CreateUserMutation } from "../../graphql/Auth/Mutations";
 
 const Registration = () => {
 
-  const [createUser, { error }] = useMutation(CreateUserMutation);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    address: '',
-    email: '',
-    phoneNo: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    address: "",
+    email: "",
+    phoneNo: "",
+    password: "",
+    confirmPassword: "",
   });
 
+    // graphql mutation
+    const [createUser, { error }] = useMutation(CreateUserMutation);
+    
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -25,10 +27,8 @@ const Registration = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    console.log('Form submitted:', formData);
 
- createUser({
+    createUser({
       variables: {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -47,9 +47,9 @@ const Registration = () => {
 
   return (
     <Container maxWidth="sm">
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={6}>

@@ -5,4 +5,12 @@ export const CreateUserMutation = gql`
   {
   registration(firstName: $firstName, address: $address, email: $email, phoneNo: $phoneNo, password: $password, confirmPassword: $confirmPassword)
 }
+
 `;
+
+export const LoginUserMutation = gql`
+mutation ($email: String!, $password: String!) {
+  login(email: $email, password: $password)
+}
+
+`

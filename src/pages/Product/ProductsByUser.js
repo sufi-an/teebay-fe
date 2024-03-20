@@ -1,33 +1,77 @@
-import React, {useEffect, useState} from "react"; 
-import ProductCard from '../../components/Card/ProductCard'; 
-import {useQuery, gql} from '@apollo/client'
+import React, { useEffect, useState } from "react";
+import DeletableProductCard from "../../components/Card/DeletableProductCard";
+import { useQuery, gql, useMutation } from "@apollo/client";
 
-import {getAllProducts} from '../../graphql/Product/Queries'
-import { useNavigate } from 'react-router-dom';
+import { getAllProducts } from "../../graphql/Product/Queries";
+import { Link, useNavigate } from "react-router-dom";
+import ConfirmPopup from "../../components/dialog/ConfirmPopup";
+import { deleteProductMutation } from "../../graphql/Product/Mutations";
+import { getLoggedInUser } from "../../utils/auth";
 
 const ProductList = () => {
+  // to navigate to other pages
   const navigate = useNavigate();
-  const {error, loading, data} =  useQuery(getAllProducts,{
-    variables: { userId: "74f417d2-3c34-43b8-9fe3-168a09065750" },
-  })
-    const [products, setProducts] = useState([])
-    
-    useEffect(()=>{
 
-        if(data){ 
-          setProducts(data.getProductByUser)
-          console.log(data)
-        }
-    },[data])
-    const onProductClick=(data)=>{
-      let path = `/editProduct?product=${data.id}`;
-      navigate(path);
+  // graphql query
+  const { error, loading, data } = useQuery(getAllProducts, {
+    variables: { userId: getLoggedInUser() },
+  });
+
+  // graphql mutation
+  const [deleteProduct, { updateError }] = useMutation(deleteProductMutation);
+
+  const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState(null);
+  const [openPopUp, setOpenPopUp] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setProducts(data.getProductByUser);
     }
+  }, [data]);
+
+
+  const onProductClick = (data) => {
+    let path = `/editProduct?product=${data.id}`;
+    navigate(path);
+  };
+
+
+  const onProductDelete = (product) => {
+    // save product to state
+    setProduct(product);
+    setOpenPopUp(true);
+  };
+  const handleDeleteSubmit = (e) => {
+    // implement deletion logic here
+    deleteProduct({
+      variables: {
+        deleteProductId: product.id,
+      },
+    });
+    if (updateError) {
+      console.log(updateError);
+    }
+    setOpenPopUp(false);
+  };
   return (
     <div>
+      <Link to={"/create"}>Add Product</Link>
+      
       {products.map((product, index) => (
-        <ProductCard onClickHandler={onProductClick} key={index} product={product} />
+        <DeletableProductCard
+          onDeleteHandler={onProductDelete}
+          onClickHandler={onProductClick}
+          key={index}
+          product={product}
+        />
       ))}
+
+      <ConfirmPopup
+        setOpen={setOpenPopUp}
+        open={openPopUp}
+        inputHandler={handleDeleteSubmit}
+      />
     </div>
   );
 };
