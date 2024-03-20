@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -7,16 +8,50 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { useMutation, gql } from "@apollo/client";
+import { LoginUserMutation } from "../../graphql/Auth/Mutations";
+import { saveLoginData } from "../../utils/auth";
+import { useNavigate } from 'react-router-dom';
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+
+  const navigate = useNavigate();
+  // graphql query
+  const [login, { error }] = useMutation(LoginUserMutation);
+  
+   const handleSubmit = async(event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+    try {
+      const inputData = new FormData(event.currentTarget);
+
+    const status = await login({
+      variables: {
+        email: inputData.get('email'),
+        password :  inputData.get("password").toString(),
+        
+      },
     });
+    if(status.data.login){
+      saveLoginData(status.data.login)
+      redirectTo('/home')
+
+    }
+
+    if (error) {
+
+      redirectTo('/')
+    }
+      
+    } catch (error) {
+      alert('No userfound')
+      redirectTo('/')
+    }
+    
   };
+  const redirectTo=(path)=>{
+   
+      navigate(path);
+  }
 
   return (
     <Container component="main" maxWidth="xs">

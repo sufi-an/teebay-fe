@@ -1,127 +1,132 @@
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import React, { useState } from "react";
+import { TextField, Button, Grid, Container } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 
-export default function Registration() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+import { useMutation } from "@apollo/client";
+import { CreateUserMutation } from "../../graphql/Auth/Mutations";
+
+const Registration = () => {
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    email: "",
+    phoneNo: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+    // graphql mutation
+    const [createUser, { error }] = useMutation(CreateUserMutation);
+    
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    createUser({
+      variables: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        address: formData.address,
+        email: formData.email,
+        phoneNo: formData.phoneNo,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      },
     });
+
+    if (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{  
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          Sign Up
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            
-            id="firstname"
-            label="First Name"
-            name="firstname"
-            autoComplete="firstname"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            
-            id="lastname"
-            label="Last Name"
-            name="lastname"
-            autoComplete="lastname"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="address"
-            label="Address"
-            name="address"
-            autoComplete="address"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            
-            id="phoneno"
-            label="Phone Number"
-            name="phoneno"
-            autoComplete="phoneno"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            autoComplete="current-password"
-          />
-         
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Register
-          </Button>
-          <Grid container>
-            
-            <Grid item>
-            Already have an account?
-              <Link href="#" variant="body2">
-                {"  Sign In"}
-              </Link>
-            </Grid>
+    <Container maxWidth="sm">
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <TextField
+              label="First Name"
+              name="firstName"
+              fullWidth
+              value={formData.firstName}
+              onChange={handleChange}
+            />
           </Grid>
-        </Box>
-      </Box>
+          <Grid item xs={6}>
+            <TextField
+              label="Last Name"
+              name="lastName"
+              fullWidth
+              value={formData.lastName}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Address"
+              name="address"
+              fullWidth
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Email"
+              name="email"
+              type="email"
+              fullWidth
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Phone Number"
+              name="phoneNumber"
+              fullWidth
+              value={formData.phoneNumber}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              fullWidth
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              fullWidth
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button type="submit" variant="contained" color="primary">
+              Sign Up
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
     </Container>
   );
-}
+};
+
+export default Registration;
